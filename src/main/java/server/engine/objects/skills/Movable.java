@@ -1,6 +1,7 @@
 package server.engine.objects.skills;
 
-import com.github.davidmoten.rtree.geometry.Point;
+
+import server.engine.objects.Point;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -23,7 +24,7 @@ public interface Movable {
 
     /**
      *
-     * @param point - destination point
+     * @param point - destination getPoint
      * @return - true if {@link Movable} object has rights to make this move
      */
     boolean moveToPoint(Point point);

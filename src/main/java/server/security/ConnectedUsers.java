@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class ConnectedUsers {
-    private ConcurrentHashMap<String, Boolean> connectedUsers;
+    private ConcurrentHashMap<String, Boolean> connectedUsers = new ConcurrentHashMap<>();
 
     public void addUser(String token){
         connectedUsers.put(token, false);

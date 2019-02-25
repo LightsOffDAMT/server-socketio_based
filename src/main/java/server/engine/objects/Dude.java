@@ -1,7 +1,5 @@
 package server.engine.objects;
 
-import com.github.davidmoten.rtree.geometry.Geometries;
-import com.github.davidmoten.rtree.geometry.Point;
 import server.engine.objects.skills.Collidable;
 import server.engine.objects.skills.Equipable;
 import server.engine.objects.skills.Movable;
@@ -20,11 +18,11 @@ public class Dude extends SimpleMovableAdapter
     }
 
     public Dude withPoint(float x, float y){
-        moveToPoint(Geometries.point(x, y));
+        moveToPoint(new Point(x, y));
         return this;
     }
 
-    public Point point(){
+    public Point getPoint(){
         return super.point;
     }
 
@@ -36,7 +34,7 @@ public class Dude extends SimpleMovableAdapter
         return --mana > 0;
     }
 
-    public String id() {
+    public String getId() {
         return id;
     }
 
@@ -46,5 +44,25 @@ public class Dude extends SimpleMovableAdapter
 
     public void setAngle(float angle) {
         this.angle = angle;
+    }
+
+    public long getHp() {
+        return hp;
+    }
+
+    public long getMana() {
+        return mana;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setHp(long hp) {
+        this.hp = hp;
+    }
+
+    public void setMana(long mana) {
+        this.mana = mana;
     }
 }

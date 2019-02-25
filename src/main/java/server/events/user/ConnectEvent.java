@@ -13,8 +13,9 @@ public class ConnectEvent implements ConnectListener {
 
     @Override
     public void onConnect(SocketIOClient socketIOClient) {
-        socketIOClient.sendEvent("connection_success", socketIOClient.getSessionId());
-        connectedUsers.connect( socketIOClient.getSessionId().toString() );
+        System.out.println(socketIOClient.getSessionId() + " : connected");
+        //socketIOClient.sendEvent("connection_success", socketIOClient.getSessionId());
+        //connectedUsers.connect( socketIOClient.getSessionId().toString() );
     }
 
 }

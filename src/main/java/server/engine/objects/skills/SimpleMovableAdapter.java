@@ -1,8 +1,7 @@
 package server.engine.objects.skills;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.davidmoten.rtree.geometry.Geometries;
-import com.github.davidmoten.rtree.geometry.Point;
+import server.engine.objects.Point;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -35,7 +34,7 @@ public class SimpleMovableAdapter implements Movable {
     public boolean moveByDiff(float dx, float dy) {
         if(point == null)
             throw new NullPointerException("Point undefined");
-        Point newPoint = Geometries.point(point.x() + dx, point.y() + dy);
+        Point newPoint = new Point(point.getX() + dx, point.getY() + dy);
         return moveToPoint( newPoint );
     }
 

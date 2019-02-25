@@ -37,13 +37,15 @@ class Application {
         Configuration configuration = new Configuration();
         configuration.setHostname("localhost");
         configuration.setPort(8888);
-        configuration.setAuthorizationListener(authorizationEvent);
+        //configuration.setAuthorizationListener(authorizationEvent);
         return configuration;
     }
 
     @Bean
     SocketIOServer server(){
         SocketIOServer server = new SocketIOServer(configuration());
+        CycleRunner cycleRunner = cycleRunner();
+        server.addDisconnectListener(socketIOClient -> cycleRunner.removeDude(socketIOClient.getSessionId().toString()));
         return server;
     }
 
@@ -63,14 +65,20 @@ class Application {
     Boolean listeners(){
         SocketIOServer server = server();
         server.addConnectListener(connectEvent);
-        server.addEventListener("new_player", Dude.class, newPlayerEvent);
-        server.addEventListener("authorize", String.class, socketAuthorizeEvent);
+        server.addEventListener("update_dude", Dude.class, newPlayerEvent);
+        server.addDisconnectListener(client -> {
+
+        });
+        //server.addEventListener("authorize", String.class, socketAuthorizeEvent);
         return true;
     }
 
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(Application.class, args);
-        SocketIOServer server = context.getBean("server", SocketIOServer.class);
+        SocketIOServer server = context.getBean(SocketIOServer.class);
+        ScheduledFuture scheduledFuture = context.getBean(ScheduledFuture.class);
+        Boolean listeners = context.getBean("listeners", Boolean.class);
+        server.start();
         while (true);
     }
 }

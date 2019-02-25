@@ -9,7 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CycleRunner implements Runnable{
+    @Autowired
     private SocketIOServer server;
+
     private ConcurrentHashMap<String, Dude> dudes = new ConcurrentHashMap<>();
     private ConcurrentLinkedQueue<UpdateDudeAction> updateDudeActions = new ConcurrentLinkedQueue<>();
 
@@ -18,7 +20,7 @@ public class CycleRunner implements Runnable{
         boolean dudesUpdated = !updateDudeActions.isEmpty();
         while(!updateDudeActions.isEmpty()){
             UpdateDudeAction updateDudeAction = updateDudeActions.poll();
-            dudes.replace(updateDudeAction.target, updateDudeAction.dude);
+            dudes.put(updateDudeAction.target, updateDudeAction.dude);
         }
 
         if(dudesUpdated)
@@ -27,6 +29,10 @@ public class CycleRunner implements Runnable{
 
     public void submitDudeUpdate(UpdateDudeAction action){
         updateDudeActions.offer(action);
+    }
+
+    public void removeDude(String token){
+        dudes.remove(token);
     }
 
     @Autowired
