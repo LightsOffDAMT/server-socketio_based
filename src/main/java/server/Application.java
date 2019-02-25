@@ -37,6 +37,7 @@ class Application {
         Configuration configuration = new Configuration();
         configuration.setHostname("localhost");
         configuration.setPort(8888);
+        configuration.setPingInterval(3000);
         //configuration.setAuthorizationListener(authorizationEvent);
         return configuration;
     }
