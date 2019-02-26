@@ -1,11 +1,19 @@
 package server.engine.objects.skills;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import server.engine.objects.Bullet;
+import server.engine.objects.Dude;
 import server.engine.objects.Point;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
+
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = Dude.class, name = "dude"),
+        @JsonSubTypes.Type(value = Bullet.class, name = "bullet")
+})
 public class SimpleMovableAdapter implements Movable {
     @JsonIgnore
     ConcurrentHashMap<String, Function<Point, Boolean>> constraints = new ConcurrentHashMap<>();

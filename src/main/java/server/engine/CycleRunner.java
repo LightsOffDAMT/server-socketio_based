@@ -1,12 +1,13 @@
 package server.engine;
 
 import com.corundumstudio.socketio.SocketIOServer;
-import javafx.util.Pair;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import server.engine.objects.Bullet;
 import server.engine.objects.Dude;
 import server.engine.objects.actions.FireBulletAction;
 import server.engine.objects.actions.UpdateDudeAction;
+import server.storage.DudesStorage;
 
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,33 +17,40 @@ public class CycleRunner implements Runnable{
     @Autowired
     private SocketIOServer server;
 
-    private ConcurrentHashMap<String, Dude> dudes = new ConcurrentHashMap<>();
+    @Autowired
+    DudesStorage dudesStorage;
     private ConcurrentLinkedQueue<UpdateDudeAction> updateDudeActions = new ConcurrentLinkedQueue<>();
 
     private ConcurrentHashMap<String, Bullet> bullets = new ConcurrentHashMap<>();
     private ConcurrentLinkedQueue<FireBulletAction> fireBulletActions = new ConcurrentLinkedQueue<>();
-    private ArrayList< Pair<String, Bullet> > currentBullets = new ArrayList<>();
+    private ConcurrentLinkedQueue<Bullet> releaseBulletActions = new ConcurrentLinkedQueue<>();
+    private ArrayList<Bullet> currentBullets = new ArrayList<>();
 
     @Override
     public void run() {
         boolean dudesUpdated = !updateDudeActions.isEmpty();
         while(!updateDudeActions.isEmpty()){
             UpdateDudeAction updateDudeAction = updateDudeActions.poll();
-            dudes.put(updateDudeAction.target, updateDudeAction.dude);
+            dudesStorage.putDude(updateDudeAction.target, updateDudeAction.dude);
         }
 
         currentBullets.clear();
         while (!fireBulletActions.isEmpty()){
             FireBulletAction fireBulletAction = fireBulletActions.poll();
             //Here we can check some conditions;
-            currentBullets.add(new Pair<>(fireBulletAction.getDude().getId(), fireBulletAction.getBullet()));
+            System.out.println(new Gson().toJson(fireBulletAction));
+            Dude dude = dudesStorage.getDudeWithId(fireBulletAction.getBullet().getId());
+            if(dude != null){
+                currentBullets.add(fireBulletAction.getBullet());
+                bullets.put(fireBulletAction.getDude().getId(), fireBulletAction.getBullet());
+            }
         }
 
         if(currentBullets.size() > 0)
             server.getBroadcastOperations().sendEvent("update_bullets", currentBullets);
 
         if(dudesUpdated)
-            server.getBroadcastOperations().sendEvent("dudes_update", dudes.values() );
+            server.getBroadcastOperations().sendEvent("dudes_update", dudesStorage.values() );
     }
 
     public void submitDudeUpdate(UpdateDudeAction action){
@@ -50,11 +58,15 @@ public class CycleRunner implements Runnable{
     }
 
     public void removeDude(String token){
-        dudes.remove(token);
+        dudesStorage.removeDude(token);
     }
 
     public void submitFireEvent(FireBulletAction action){
         fireBulletActions.offer(action);
+    }
+
+    public void submitFireReleaseEvent(Bullet toRelease){
+        releaseBulletActions.offer(toRelease);
     }
 
     @Autowired

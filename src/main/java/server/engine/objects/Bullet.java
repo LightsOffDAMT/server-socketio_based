@@ -1,11 +1,13 @@
 package server.engine.objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import server.engine.objects.skills.Movable;
 import server.engine.objects.skills.SimpleMovableAdapter;
 
 public class Bullet extends SimpleMovableAdapter
         implements Movable {
     private String id;
+    @JsonIgnore
     private long bufferLifetime;
     private float angle;
 
@@ -14,6 +16,10 @@ public class Bullet extends SimpleMovableAdapter
     public Bullet withId(String id){
         this.id = id;
         return this;
+    }
+
+    public Point getPoint(){
+        return super.point;
     }
 
     public String getId() {

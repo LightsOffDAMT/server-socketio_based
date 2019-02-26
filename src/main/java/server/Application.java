@@ -9,8 +9,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import server.engine.CycleRunner;
+import server.engine.objects.Bullet;
 import server.engine.objects.Dude;
+import server.events.game.FireBulletEvent;
 import server.events.game.NewPlayerEvent;
+import server.events.game.ReleaseBulletEvent;
 import server.events.user.AuthorizationEvent;
 import server.events.user.ConnectEvent;
 import server.events.user.SocketAuthorizeEvent;
@@ -29,6 +32,10 @@ class Application {
     ConnectEvent connectEvent;
     @Autowired
     NewPlayerEvent newPlayerEvent;
+    @Autowired
+    FireBulletEvent fireBulletEvent;
+    @Autowired
+    ReleaseBulletEvent releaseBulletEvent;
     @Autowired
     SocketAuthorizeEvent socketAuthorizeEvent;
 
@@ -67,8 +74,9 @@ class Application {
         SocketIOServer server = server();
         server.addConnectListener(connectEvent);
         server.addEventListener("update_dude", Dude.class, newPlayerEvent);
+        server.addEventListener("fire_bullet", Bullet.class, fireBulletEvent);
+        server.addEventListener("release_bullet", Bullet.class, releaseBulletEvent);
         server.addDisconnectListener(client -> {
-
         });
         //server.addEventListener("authorize", String.class, socketAuthorizeEvent);
         return true;
